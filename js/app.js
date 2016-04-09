@@ -212,29 +212,33 @@ function setImageWhenArrowsClick($imageLink, $imageSrc, $captionText) {
 $(document).keydown(function (k) {
 
     if (k.keyCode == 39) {
-        var $activeImg = $(".selected");//create location for current image selected
-        var $captionText = $activeImg.closest('li').next().find('a').addClass('selected').children("img").attr("alt");//grab current image then navigate to the closest <li>, then move to the next <li> and find it's associated <a> and make it the currently selected anchor, then find the child img of the <a> tag and grab the caption text via the alt attribute
-        var $imageNext = $activeImg.closest('li').next('li').find('a').addClass('selected').attr("href");//same as above, but grab href instead to show the next photo
+      var $activeImg = $(".selected");//create location for current image selected by assigning .selected class (established above) to variable within function @ the local scope
+      var $next = $activeImg.closest('li').next();//find the closest <li> tag of the active image and select the next image in the gallery
+      if($activeImg.closest('li').hasClass('last')) {//if last item in gallery is chosen, assign .first class to $next variable to return to 1st image in gallery
+          $next = $('.first');
+      }
+      var $captionText = $next.find('a').addClass('selected').children("img").attr("alt");//grab current image then navigate to the closest <li>, then move to the next <li> and find it's associated <a> and make it the currently selected anchor, then find the child img of the <a> tag and grab the caption text via the alt attribute
+      var $imageNext = $next.find('a').addClass('selected').attr("href");//same as above, but grab href instead to show the next photo
+      var $imageNextLink = $next.find('a');//locate next image href attribute
 
-        $activeImg.removeClass('selected');//remove class of currently selected elements in order to transfer .selected class to next and prev elements
-
-
-        $image.attr("src", $imageNext);//change location of "src" to be equal to next image
-        $captionNext = $captionText;
-        $caption.text($captionNext);//get caption text of next image
+      $activeImg.removeClass('selected');//remove class of currently selected elements in order to transfer .selected class to next and prev elements
+      setImageWhenArrowsClick($imageNextLink, $imageNext, $captionText);//establish link, image and caption text all in one location
 
     }
 });
 
 $(document).keydown(function (k) {
     if (k.keyCode == 37) {
-        var $activeImg = $(".selected");
-        var $captionText = $activeImg.closest('li').prev().find('a').addClass('selected').children("img").attr("alt");
-        var $imagePrev = $activeImg.closest('li').prev('li').find('a').addClass('selected').attr("href");
-        $activeImg.removeClass('selected');
+      var $activeImg = $(".selected");
+      var $previous = $activeImg.closest('li').prev().find('a');
+      if($activeImg.closest('li').hasClass('first')) {
+          $previous = $('.last').find('a');
+      }
+      var $captionText = $previous.addClass('selected').children("img").attr("alt");
+      //var $imagePrev = $activeImg.closest('li').prev('li').find('a').addClass('selected').attr("href");
+      var $imagePrev = $previous.addClass('selected').attr("href");
+      $activeImg.removeClass('selected');
 
-        $image.attr("src", $imagePrev);
-        $captionPrev = $captionText;
-        $caption.text($captionPrev);
+      setImageWhenArrowsClick($previous, $imagePrev, $captionText);
     }
 });
